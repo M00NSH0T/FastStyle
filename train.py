@@ -72,7 +72,7 @@ class StyleContentModel(tf.keras.models.Model):
 
 
 def trainer(style_file, dataset_path, weights_path, content_weight, style_weight, 
-            tv_weight, learning_rate, batch_size, epochs, debug):
+            tv_weight, learning_rate, batch_size, epochs, debug, resume=True):
 
     # Setup the given layers
     content_layers = ['block4_conv2']
@@ -85,6 +85,13 @@ def trainer(style_file, dataset_path, weights_path, content_weight, style_weight
 
     # Build Feed-forward transformer
     network = feed_forward()
+
+    if resume:
+        try:
+            network.load_weights(weights_path).expect_partial()
+            print("loaded weights from: ",weights_path)
+        except:
+            print("failed to load weights. Starting fresh.")
 
     # Build VGG-19 Loss network
     extractor = StyleContentModel(style_layers, content_layers)
