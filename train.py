@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import os
-
+from tqdm import tqdm
 from modules.utils import tensor_to_image, load_img, create_folder, clip_0_1
 from modules.vgg19 import preprocess_input, VGG19
 from modules.forward import feed_forward
@@ -151,7 +151,7 @@ def trainer(style_file, dataset_path, weights_path, content_weight, style_weight
         print('Epoch {}'.format(e))
         iteration = 0
 
-        for img in train_dataset:
+        for img in tqdm(train_dataset):
 
             for j, img_p in enumerate(img):
                 X_batch[j] = img_p
@@ -163,11 +163,10 @@ def trainer(style_file, dataset_path, weights_path, content_weight, style_weight
             if iteration % 3000 == 0:
                 # Save checkpoints
                 network.save_weights(weights_path, save_format='tf')
-                print('=====================================')
-                print('            Weights saved!           ')
-                print('=====================================\n')
-
                 if debug:
+                    print('=====================================')
+                    print('            Weights saved!           ')
+                    print('=====================================\n')
                     print('step %s: loss = %s' % (iteration, loss_metric.result()))
                     print('s_loss={}, c_loss={}, t_loss={}'.format(sloss_metric.result(), closs_metric.result(), tloss_metric.result()))
 
